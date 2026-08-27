@@ -1,3 +1,5 @@
+package Conexao;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -5,7 +7,7 @@ import java.sql.SQLException;
 public class Conexao {
 
     private static String driver= "oracle.jdbc.driver.OracleDriver";
-    private static String url = "jdbc:oracle:thin:@oracle.fiap.com.br:1521:orcl ";
+    private static String url = "jdbc:oracle:thin:@oracle.fiap.com.br:1521:orcl";
     private static String usuario = "rm572228";
     private static String senha = "260497";
 
@@ -28,7 +30,4 @@ public class Conexao {
         }
         return null;
     }
-
-
-
 }

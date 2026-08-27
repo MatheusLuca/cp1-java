@@ -1,6 +1,8 @@
-import java.sql.Connection;
+package View;
 
-public class View {
+import Conexao.Conexao;
+
+public class Main {
     static void main(String[] args) {
 
         Conexao.loadDriver();
