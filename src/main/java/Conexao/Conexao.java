@@ -11,8 +11,12 @@ public class Conexao {
     private static String usuario = "rm572228";
     private static String senha = "260497";
 
+    private static Connection conexao;
+
+
     public static void loadDriver(){
         try{
+            // É como ligar o tradutor para dps se comunicar com o banco.
             Class.forName(driver);
               System.out.println("Driver carregado com sucesso!");
         } catch (ClassNotFoundException e) {
@@ -22,12 +26,25 @@ public class Conexao {
 
     public static Connection conectar(){
         try{
-            Connection conn = DriverManager.getConnection(url, usuario, senha);
+            conexao = DriverManager.getConnection(url, usuario, senha);
             System.out.println("Conexao com o banco oracle estabelecida!");
-            return conn;
+            return conexao;
         } catch (SQLException e) {
             System.out.println("Erro ao conectar no banco verificque url, usuario e senha" + e.getMessage());
         }
         return null;
     }
+
+    public static void fecharConexao(){
+
+        try{
+            if (conexao != null && !conexao.isClosed()){
+                 conexao.close();
+                System.out.println("Conexao fechada!");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
