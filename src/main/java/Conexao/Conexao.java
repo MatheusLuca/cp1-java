@@ -18,7 +18,7 @@ public class Conexao {
         try{
             // É como ligar o tradutor para dps se comunicar com o banco.
             Class.forName(driver);
-              System.out.println("Driver carregado com sucesso!");
+
         } catch (ClassNotFoundException e) {
              System.err.println("Erro ao carregar o driver do banco" + e.getMessage());
         }
@@ -27,7 +27,6 @@ public class Conexao {
     public static Connection conectar(){
         try{
             conexao = DriverManager.getConnection(url, usuario, senha);
-            System.out.println("Conexao com o banco oracle estabelecida!");
             return conexao;
         } catch (SQLException e) {
             System.out.println("Erro ao conectar no banco verificque url, usuario e senha" + e.getMessage());
@@ -36,11 +35,9 @@ public class Conexao {
     }
 
     public static void fecharConexao(){
-
         try{
             if (conexao != null && !conexao.isClosed()){
                  conexao.close();
-                System.out.println("Conexao fechada!");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
