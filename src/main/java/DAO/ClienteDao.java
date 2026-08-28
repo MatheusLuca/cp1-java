@@ -1,18 +1,18 @@
 package DAO;
 
 import Conexao.Conexao;
+import Exceptions.ClienteNaoEncontrado;
+import Exceptions.ClienteNaoEncontradoNome;
 import Model.Cliente;
 
-import javax.xml.transform.Result;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ClienteDao {
 
-
-
-    public static void inserir(Cliente cliente){
+    public static void inserir(Cliente cliente) {
 
         //Scripr sql para efetuar o insert do cliente
         String sql = """
@@ -20,9 +20,9 @@ public class ClienteDao {
                     VALUES(SEQ_TB_CLIENTE.NEXTVAL, ?, ?)
                 """;
 
-        try{
+        try {
             // Enviar comando sql ao banco
-            PreparedStatement stmt =  Conexao.conectar().prepareStatement(sql);
+            PreparedStatement stmt = Conexao.conectar().prepareStatement(sql);
             stmt.setString(1, cliente.getNome());
             stmt.setString(2, cliente.getTelefone());
             stmt.executeUpdate();
@@ -34,14 +34,15 @@ public class ClienteDao {
         }
     }
 
-    public static String recuperarClientes(){
+    public static String recuperarClientes() {
         String sqlQuery = """
                 SELECT * FROM TB_CLIENTES
                 """;
 
-        try{
+        try {
+
             PreparedStatement stmt = Conexao.conectar().prepareStatement(sqlQuery);
-            ResultSet resultadoConsulta = stmt.executeQuery(sqlQuery);
+            ResultSet resultadoConsulta = stmt.executeQuery();
             System.out.println("\n========================================");
             System.out.println(" LISTA DE CLIENTES");
             System.out.println("========================================");
@@ -49,7 +50,7 @@ public class ClienteDao {
             //Retorna true se existir um proximo registros
             //Retorna false caso nao exista mais registros
 
-            while( resultadoConsulta.next()){
+            while (resultadoConsulta.next()) {
                 int id = resultadoConsulta.getInt("id_cliente");
                 String nomeCliente = resultadoConsulta.getString("nome");
                 String telefoneCliente = resultadoConsulta.getString("telefone");
@@ -60,23 +61,24 @@ public class ClienteDao {
                 System.out.println("Telefone: " + telefoneCliente);
                 System.out.println("----------------------------------------");
             }
-
+            Conexao.fecharConexao();
 
         } catch (SQLException e) {
-            System.out.println("Erro na consulta!" + e.getErrorCode() );;
+            System.out.println("Erro na consulta!" + e.getErrorCode());
+            ;
         }
         return null;
     }
 
-    public static Cliente recuperarClientePorId (int id){
+
+    public static Cliente recuperarClientePorId(int id) {
         //  Query SQL
         String sqlRetornoID = """
                 SELECT id_cliente, nome, telefone
                     FROM TB_CLIENTES
                         WHERE id_cliente = ?
                 """;
-
-        try{
+        try {
             // recurso para preparar e executar comandos sql com parametros
             // Conecte com o banco e prepare o comando sql com parametro e armazena em stmt
             // stmt -> manda o sql para o banco
@@ -90,23 +92,67 @@ public class ClienteDao {
 
             // Como o cursor contabiliza antes do primeiro registro é necessário usar o next para acessar o proximo registro
             // nesse caso seria o primeiro e unico resultado.
-            if(resultadoConsultaID.next()) {
+            if (resultadoConsultaID.next()) {
                 int idResult = resultadoConsultaID.getInt("id_cliente");
                 String nomeResult = resultadoConsultaID.getString("nome");
                 String telefoneResult = resultadoConsultaID.getString("telefone");
                 return new Cliente(nomeResult, telefoneResult, idResult);
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ClienteNaoEncontrado(id);
+        } catch (SQLException e) {
+            System.out.println("Erro na consulta!" + e.getErrorCode());
         }
-
         return null;
     }
 
+    public static Cliente recuperarPorNome(String nome) {
 
+        String sqlBuscaPorNome = """
+                SELECT id_cliente, nome, telefone
+                    FROM TB_CLIENTES
+                        WHERE UPPER(nome) = UPPER(?)
+                """;
+        try {
+            PreparedStatement stmt = Conexao.conectar().prepareStatement(sqlBuscaPorNome);
+            stmt.setString(1, nome);
+            ResultSet resultadoConsultaNome = stmt.executeQuery();
 
+            if (resultadoConsultaNome.next()) {
+                String nomeResult = resultadoConsultaNome.getString("nome");
+                String telefoneResult = resultadoConsultaNome.getString("telefone");
+                int idResult = resultadoConsultaNome.getInt("id_cliente");
+                return new Cliente(nomeResult, telefoneResult, idResult);
+            }
 
+            throw new ClienteNaoEncontradoNome(nome);
 
+        } catch (SQLException e) {
+            System.out.println("Erro na consulta!" + e.getErrorCode());
+        }
+        return null;
+    }
 
+    public static String excluirClienteId(int id) {
 
+        String sqlExclusaoId = """
+                
+                delete from tb_clientes
+                    where id_cliente = ?
+                """;
+        try {
+            PreparedStatement stmt = Conexao.conectar().prepareStatement(sqlExclusaoId);
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+            return """
+                    Usuario deletado!
+                    """;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
+
+
+
+
+
