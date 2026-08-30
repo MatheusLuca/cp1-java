@@ -5,14 +5,20 @@ import DAO.ClienteDao;
 import Exceptions.ClienteNaoEncontrado;
 import Exceptions.ClienteNaoEncontradoNome;
 import Model.Cliente;
+import Service.ClienteService;
 import Service.MenuService;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
     static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
+
+
+
+
 
        int opcaoMenu = 0;
        System.out.println(MenuService.imprimirMenu());
@@ -107,7 +113,43 @@ public class Main {
                    System.out.println(MenuService.imprimirMenu());
                    opcaoMenu = sc.nextInt();
                    break;
+
+               case 5:
+
+                   boolean pararInclusao = true;
+
+                   while (pararInclusao) {
+                       System.out.println("Cadastrar Clientes em lote: ");
+                       System.out.println("(1) Para cadastrar (2) sair e salvar lotes");
+
+                       int opcaoInclusao = sc.nextInt();
+                       sc.nextLine();
+
+                       if (opcaoInclusao == 1) {
+
+                           System.out.println("Insira o nome: ");
+                           String nomeClienteLote = sc.nextLine();
+
+                           System.out.println("Insira o telefone do cliente: ");
+                           String telefoneClienteLote = sc.nextLine();
+
+                           Cliente clienteLote = new Cliente(nomeClienteLote, telefoneClienteLote);
+                           ClienteService.addCliente(clienteLote);
+
+                       } else if (opcaoInclusao == 2) {
+                           ArrayList<Cliente> listaClientes = ClienteService.getClientes();
+                           ClienteDao.incluirClienteLote(listaClientes);
+                           pararInclusao = false;
+                           System.out.println(MenuService.imprimirMenu());
+                           opcaoMenu = sc.nextInt();
+
+                       } else {
+                           System.out.println("Opção inválida!");
+                       }
+                   }
+                   break;
            }
        }
     }
 }
+

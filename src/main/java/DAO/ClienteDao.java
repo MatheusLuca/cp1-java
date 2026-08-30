@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class ClienteDao {
 
@@ -150,6 +151,41 @@ public class ClienteDao {
             throw new RuntimeException(e);
         }
     }
+
+    public static String incluirClienteLote(ArrayList<Cliente> clientes){
+
+        String sqlInsertClientes = """
+                   INSERT INTO TB_CLIENTES (id_cliente, nome, telefone)
+                    VALUES(SEQ_TB_CLIENTE.NEXTVAL, ?, ?)
+                """;
+
+        int quantidadeInserida = 0;
+
+        try{
+            PreparedStatement stmt = Conexao.conectar().prepareStatement(sqlInsertClientes);
+            for(Cliente cli : clientes){
+                stmt.setString(1, cli.getNome());
+                stmt.setString(2, cli.getTelefone());
+                int resultado = stmt.executeUpdate();
+
+                    if(resultado ==1){
+                        quantidadeInserida++;
+                    }
+            }
+
+            if(quantidadeInserida == clientes.size()){
+                return "Todos os " + quantidadeInserida + " clientes foram inseridos!";
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+
+    }
+
+
+
+
 }
 
 

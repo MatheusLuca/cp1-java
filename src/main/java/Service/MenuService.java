@@ -14,6 +14,7 @@ public class MenuService {
                 ║   [2]  Recuperar todos os clientes       ║
                 ║   [3]  Consultar cliente                 ║
                 ║   [4]  Excluir cliente                   ║
+                ║   [5]  Inserir em lote                   ║
                 ║   [0]  Sair                              ║
                 ║                                          ║
                 ╚══════════════════════════════════════════╝
